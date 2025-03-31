@@ -1,3 +1,7 @@
+// ------------------------------------------------------------------------
+// MIT License - Copyright (c) Microsoft Corporation. All rights reserved.
+// ------------------------------------------------------------------------
+
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;
@@ -82,7 +86,7 @@ public class SelectColumn<TGridItem> : ColumnBase<TGridItem>
     public EventCallback<IEnumerable<TGridItem>> SelectedItemsChanged { get; set; }
 
     /// <summary>
-    /// Gets or sets the selection mode (Single or Multiple).
+    /// Gets or sets the selection mode (Single, SingleSticky or Multiple).
     /// </summary>
     [Parameter]
     public DataGridSelectMode SelectMode
@@ -92,7 +96,7 @@ public class SelectColumn<TGridItem> : ColumnBase<TGridItem>
         {
             _selectMode = value;
 
-            if (value == DataGridSelectMode.Single)
+            if (value is DataGridSelectMode.Single or DataGridSelectMode.SingleSticky)
             {
                 KeepOnlyFirstSelectedItemAsync().Wait();
             }
@@ -191,7 +195,7 @@ public class SelectColumn<TGridItem> : ColumnBase<TGridItem>
 
     /// <inheritdoc />
     [Parameter]
-    public override GridSort<TGridItem>? SortBy { get; set; }
+    public override IGridSort<TGridItem>? SortBy { get; set; }
 
     /// <summary>
     /// Allows to clear the selection.
@@ -280,6 +284,11 @@ public class SelectColumn<TGridItem> : ColumnBase<TGridItem>
     {
         if (item != null && (Selectable == null || Selectable.Invoke(item)))
         {
+            if (SelectMode is DataGridSelectMode.SingleSticky && _selectedItems.Contains(item))
+            {
+                return;
+            }
+
             if (SelectedItems.Contains(item))
             {
                 _selectedItems.Remove(item);
@@ -288,7 +297,7 @@ public class SelectColumn<TGridItem> : ColumnBase<TGridItem>
             }
             else
             {
-                if (SelectMode == DataGridSelectMode.Single)
+                if (SelectMode is DataGridSelectMode.Single or DataGridSelectMode.SingleSticky)
                 {
                     foreach (var previous in _selectedItems)
                     {
@@ -324,6 +333,7 @@ public class SelectColumn<TGridItem> : ColumnBase<TGridItem>
             return IconChecked ?? SelectMode switch
             {
                 DataGridSelectMode.Single => IconSelectedSingle,
+                DataGridSelectMode.SingleSticky => IconSelectedSingle,
                 _ => IconSelectedMultiple
             };
         }
@@ -332,6 +342,7 @@ public class SelectColumn<TGridItem> : ColumnBase<TGridItem>
             return IconUnchecked ?? SelectMode switch
             {
                 DataGridSelectMode.Single => IconUnselectedSingle,
+                DataGridSelectMode.SingleSticky => IconUnselectedSingle,
                 _ => IconUnselectedMultiple
             };
         }
@@ -408,6 +419,9 @@ public class SelectColumn<TGridItem> : ColumnBase<TGridItem>
         switch (SelectMode)
         {
             case DataGridSelectMode.Single:
+                return new RenderFragment((builder) => { });
+
+            case DataGridSelectMode.SingleSticky:
                 return new RenderFragment((builder) => { });
 
             case DataGridSelectMode.Multiple:
@@ -518,7 +532,10 @@ public class SelectColumn<TGridItem> : ColumnBase<TGridItem>
         _selectedItems.Clear();
         if (SelectAll == true)
         {
-            _selectedItems.AddRange(InternalGridContext.Grid.Items?.ToArray() ?? InternalGridContext.Items);
+            // Only add selectable items
+            _selectedItems.AddRange((InternalGridContext.Grid.Items?.ToList() ?? InternalGridContext.Items)
+                .Where(item => Selectable?.Invoke(item) ?? true)
+            );
         }
 
         if (SelectedItemsChanged.HasDelegate)

@@ -180,6 +180,7 @@ export function enableColumnResizing(gridElement) {
             if (!headerBeingResized) {
                 return;
             }
+            gridElement.style.tableLayout = "fixed";
 
             const horizontalScrollOffset = document.documentElement.scrollLeft;
             let width;
@@ -212,7 +213,7 @@ export function enableColumnResizing(gridElement) {
             window.removeEventListener('pointercancel', onPointerUp);
             window.removeEventListener('pointerleave', onPointerUp);
 
-            headerBeingResized.classList.remove('header--being-resized');
+            headerBeingResized.classList.remove('header-being-resized');
             headerBeingResized = null;
 
             if (e.target.hasPointerCapture(e.pointerId)) {
@@ -222,7 +223,7 @@ export function enableColumnResizing(gridElement) {
 
         const initResize = ({ target, pointerId }) => {
             headerBeingResized = target.parentNode;
-            headerBeingResized.classList.add('header--being-resized');
+            headerBeingResized.classList.add('header-being-resized');
 
 
             window.addEventListener('pointermove', onPointerMove);
@@ -359,4 +360,34 @@ export function autoFitGridColumns(gridElement, columnCount) {
     gridElement.classList.remove("auto-fit");
 
     grids[gridElement.id] = gridTemplateColumns;
+}
+
+function calculateVisibleRows(gridElement, rowHeight) {
+    if (rowHeight <= 0) {
+        return 0;
+    }
+
+    const gridContainer = gridElement.parentElement;
+
+    if (!gridContainer) {
+        return 0;
+    }
+
+    const availableHeight = gridContainer?.clientHeight || window.visualViewport?.height || window.innerHeight;
+
+    const visibleRows = Math.max(Math.floor(availableHeight / rowHeight), 1);
+    return visibleRows;
+}
+
+export function dynamicItemsPerPage(gridElement, dotNetObject, rowSize) {
+    const observer = new ResizeObserver(() => {
+        const visibleRows = calculateVisibleRows(gridElement, rowSize)
+        dotNetObject.invokeMethodAsync('UpdateItemsPerPageAsync', visibleRows)
+            .catch(err => console.error("Error invoking Blazor method:", err));
+    });
+
+    const targetElement = gridElement.parentElement;
+    if (targetElement) {
+        observer.observe(targetElement);
+    }
 }

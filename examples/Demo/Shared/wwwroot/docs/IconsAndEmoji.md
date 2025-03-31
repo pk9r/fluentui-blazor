@@ -26,7 +26,7 @@ dotnet add package Microsoft.FluentUI.AspNetCore.Components.Icons
 To use the **Fluent UI Emoji** in your application, you need to install the [Microsoft.FluentUI.AspNetCore.Components.Emojis](https://www.nuget.org/packages/Microsoft.FluentUI.AspNetCore.Components.Emoji/) NuGet package in the project which is using the main library.
 
 ```shell
-dotnet add package Microsoft.FluentUI.AspNetCore.Components.Emojis
+dotnet add package Microsoft.FluentUI.AspNetCore.Components.Emoji
 ```
 
  
@@ -89,7 +89,7 @@ After adding the class, you can start using this custom icon like a "normal" Flu
 **Important:** Starting with v4.11.0 you need to add the following <code>&#64;using</code> statement to your _Imports.razor file:
 
 ```
-@using Emoji = Microsoft.FluentUI.AspNetCore.Components.Emoji
+@using Emojis = Microsoft.FluentUI.AspNetCore.Components.Emojis
 ```
 
 > **Note:** Use the [Emoji explorer](/Emoji#explore-emojis) to search through the entire collection of emoji. You can easily copy a complete emoji component 

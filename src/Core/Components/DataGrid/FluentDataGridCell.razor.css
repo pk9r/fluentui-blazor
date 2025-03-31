@@ -33,6 +33,7 @@ td {
     font-weight: 600;
     text-align: center;
     height: 100%;
+    user-select: none;
 }
 
 .multiline-text {
@@ -46,10 +47,6 @@ td {
     font-weight: 600;
     position: relative;
     padding: calc((var(--design-unit) + var(--focus-stroke-width) - var(--stroke-width)) * 1px) 1px calc((var(--design-unit) + var(--focus-stroke-width) - var(--stroke-width)) * 1px);
-}
-
-.column-header:not(.select-all):first-of-type {
-    padding-inline-start: calc(var(--design-unit) * 2px);
 }
 
 ::deep .col-sort-button {

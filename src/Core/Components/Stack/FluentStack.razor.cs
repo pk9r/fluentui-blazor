@@ -46,6 +46,12 @@ public partial class FluentStack : FluentComponentBase
     public Orientation Orientation { get; set; } = Orientation.Horizontal;
 
     /// <summary>
+    /// Gets or sets a value indicating whether the stack is reversed.
+    /// </summary>
+    [Parameter]
+    public bool? Reversed { get; set; }
+
+    /// <summary>
     /// Gets or sets the width of the stack as a percentage string (default = 100%).
     /// </summary>
     [Parameter]
@@ -87,6 +93,7 @@ public partial class FluentStack : FluentComponentBase
             HorizontalAlignment.Right => "end",
             HorizontalAlignment.End => "end",
             HorizontalAlignment.Stretch => "stretch",
+            HorizontalAlignment.SpaceBetween => Orientation == Orientation.Vertical ? "start" : "space-between",
             _ => "start",
         };
     }
@@ -98,6 +105,8 @@ public partial class FluentStack : FluentComponentBase
             VerticalAlignment.Top => "start",
             VerticalAlignment.Center => "center",
             VerticalAlignment.Bottom => "end",
+            VerticalAlignment.Stretch => "stretch",
+            VerticalAlignment.SpaceBetween => Orientation == Orientation.Horizontal ? "start" : "space-between",
             _ => "start",
         };
     }

@@ -1,20 +1,22 @@
 .fluent-data-grid {
     width: auto;
     flex: 1;
-    display: grid;
     border-collapse: collapse;
     align-items: center;
     height: max-content;
     margin-bottom: 0px;
 }
 
-thead,
-tbody
-{
-    display:contents;
+    .fluent-data-grid.grid {
+        display: grid;
+    }
+
+.grid thead,
+.grid tbody {
+    display: contents;
 }
 
-::deep tr {
+.grid ::deep tr {
     display: contents;
 }
 
@@ -22,11 +24,10 @@ tbody
     background: var(--neutral-fill-stealth-hover);
 }
 
-
 .col-options, .col-resize {
     position: absolute;
     min-width: 250px;
-    top: 2.2rem;
+    top: 2.7rem;
     background: var(--neutral-layer-2);
     border: 1px solid var(--neutral-layer-3);
     border-radius: 0.3rem;
@@ -43,7 +44,7 @@ tbody
 .col-justify-end .col-options,
 .col-justify-right .col-options {
     left: unset;
-    margin-right:  0.6rem;
+    margin-right: 0.6rem;
 }
 
 [dir=rtl] .col-justify-end .col-options,
@@ -89,6 +90,3 @@ tbody
     background-color: var(--neutral-fill-stealth-rest);
     z-index: 2;
 }
-
-
-
